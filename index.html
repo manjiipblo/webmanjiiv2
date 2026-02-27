@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MANJII V2 - OFFICIAL EASY DRAG</title>
+    <style>
+        :root { 
+            --cyan: #00f2ff; 
+            --green: #00ff8c; 
+            --bg: #010a0f; 
+            --card: rgba(10, 22, 29, 0.9); 
+            --border: rgba(0, 242, 255, 0.3);
+        }
+        body { 
+            background-color: var(--bg); color: white; 
+            font-family: -apple-system, system-ui, sans-serif; 
+            margin: 0; padding: 0; text-align: center;
+        }
+
+        /* Navbar & Sidebar */
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; background: rgba(1, 10, 15, 0.95); 
+            border-bottom: 2px solid var(--cyan); position: sticky; top: 0; z-index: 1000;
+        }
+        .sidebar {
+            height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0;
+            background-color: #000; overflow-x: hidden; transition: 0.3s;
+            padding-top: 60px; border-left: 2px solid var(--cyan);
+        }
+        .sidebar a { padding: 15px 25px; text-decoration: none; font-size: 14px; color: #ccc; display: block; border-bottom: 1px solid #111; text-transform: uppercase; }
+        .closebtn { position: absolute; top: 10px; left: 20px; font-size: 30px; color: var(--cyan); }
+
+        .container { padding: 20px; max-width: 450px; margin: auto; }
+        
+        .panel { 
+            border: 1px solid var(--border); border-radius: 25px; 
+            background: var(--card); padding: 30px 20px; 
+            backdrop-filter: blur(10px); box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        .header-title { color: var(--cyan); font-size: 32px; font-weight: 900; letter-spacing: 3px; margin: 0; }
+        .sub-title { color: var(--cyan); font-size: 11px; font-weight: bold; letter-spacing: 2px; opacity: 0.8; margin-top: 5px; }
+
+        .desc-box { 
+            background: rgba(0, 242, 255, 0.05); border: 1px solid var(--cyan); 
+            border-radius: 15px; padding: 15px; margin-top: 20px; text-align: left; 
+        }
+        .desc-box h3 { color: var(--cyan); font-size: 14px; margin: 0 0 10px 0; }
+        .desc-box p { font-size: 11px; color: #bbb; line-height: 1.5; margin: 0; }
+        .safety-tag { display: inline-block; background: var(--green); color: #000; font-size: 9px; font-weight: bold; padding: 2px 8px; border-radius: 50px; margin-top: 10px; margin-right: 5px; }
+
+        .chat-container {
+            background: rgba(0,0,0,0.5); border: 1px solid #1a2f3a; border-radius: 15px; 
+            margin-top: 20px; text-align: left; overflow: hidden;
+        }
+        .chat-header { background: #1a2f3a; padding: 8px 15px; font-size: 10px; color: var(--cyan); font-weight: bold; display: flex; justify-content: space-between; }
+        .chat-content { height: 100px; padding: 10px; overflow-y: hidden; font-size: 11px; font-family: monospace; }
+        .chat-line { margin-bottom: 5px; animation: fadeInUp 0.4s ease; }
+        .chat-user { color: var(--green); font-weight: bold; }
+
+        .verif-title { color: var(--cyan); font-weight: 900; font-size: 16px; margin: 25px 0 15px 0; text-transform: uppercase; }
+        input { 
+            width: 100%; padding: 18px; background: #000; border: 1px solid #333; 
+            color: var(--cyan); border-radius: 15px; text-align: center; box-sizing: border-box; font-size: 16px; font-weight: bold; outline: none;
+        }
+        .btn-verif { 
+            width: 100%; padding: 18px; border-radius: 15px; border: none; 
+            background: linear-gradient(90deg, var(--cyan), #0088ff); color: #000; font-weight: 900; 
+            cursor: pointer; text-transform: uppercase; margin-top: 15px;
+        }
+
+        .premium-card {
+            border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px;
+            background: rgba(255,255,255,0.02); text-align: left;
+        }
+        .plan-title { font-size: 20px; font-weight: 900; color: var(--cyan); margin: 0; }
+        .plan-price { font-size: 24px; font-weight: 900; margin: 5px 0; color: #fff; }
+        .btn-buy { display: block; width: 100%; padding: 12px; background: var(--cyan); color: #000; text-align: center; text-decoration: none; border-radius: 10px; font-weight: 800; }
+
+        .setup-step { margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; text-align: left; font-size: 13px; }
+        .setup-step b { color: var(--cyan); }
+
+        .page { display: none; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="mySidebar" class="sidebar">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <a href="#" onclick="showPage('home')">🏠 Dashboard</a>
+      <a href="#" onclick="showPage('vip')">💎 Premium Menu</a>
+      <a href="#" onclick="showPage('testi')">📊 Real Testimonial</a>
+      <a href="#" onclick="showPage('tutorial')">⚙️ Setup Guide</a>
+    </div>
+
+    <div class="navbar">
+        <div style="font-weight: 900;">MANJII <span style="color: var(--cyan);">V2</span></div>
+        <div onclick="openNav()" style="cursor:pointer; color:var(--cyan); font-size:24px;">☰</div>
+    </div>
+
+    <div class="container">
+        
+        <div id="home" class="page" style="display:block">
+            <div class="panel">
+                <div class="header-title">MANJII V2</div>
+                <div class="sub-title">PREMIUM SYSTEM OPTIMIZER</div>
+                
+                <div class="desc-box">
+                    <h3>APA ITU EASY DRAG IOS?</h3>
+                    <p>Modul pengoptimalan sensitivitas khusus yang meningkatkan respon touch-layer hingga 0.01ms. Memudahkan tarikan drag-shot agar peluru otomatis stabil di area kepala.</p>
+                    <div class="safety-tag">✓ 100% AMAN AKUN UTAMA</div>
+                    <div class="safety-tag">✓ ANTI BANNED / BLACKLIST</div>
+                    <div class="safety-tag">✓ ANTI SURCIN</div>
+                </div>
+
+                <div class="verif-title">REGISTRASI EASY DRAG</div>
+                <input type="number" id="uid" placeholder="MASUKKAN ID FF ANDA">
+                <button class="btn-verif" onclick="runProcess()">AKTIFKAN EASY DRAG</button>
+                <div id="log" style="display:none; margin-top:20px; text-align:left; font-family:monospace; font-size:10px; color:var(--green); background:#000; padding:15px; border-radius:10px;"></div>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-header"><span>🌐 GLOBAL CHAT MANJII V2</span> <span>● ONLINE</span></div>
+                <div id="chat-box" class="chat-content"></div>
+            </div>
+
+            <a href="https://wa.me/6283845203074" style="display:block; width:100%; padding:15px; background:#25d366; color:#000; text-decoration:none; border-radius:12px; font-weight:bold; margin-top:15px; text-align:center;">💬 ORDER VIA WHATSAPP</a>
+            <a href="https://tiktok.com/@manjiixit" style="display:block; width:100%; padding:14px; border:1px solid #fff; color:#fff; text-decoration:none; border-radius:12px; font-weight:bold; margin-top:10px; text-align:center;">🎬 TIKTOK : @MANJIIXIT</a>
+        </div>
+
+        <div id="vip" class="page">
+            <h2 style="color:var(--cyan)">PAKET PREMIUM</h2>
+            <div class="premium-card">
+                <p class="plan-title">1 DAY PASS</p><div class="plan-price">RP 50.000</div>
+                <a href="https://wa.me/6283845203074" class="btn-buy">BELI SEKARANG</a>
+            </div>
+            <div class="premium-card" style="border-color:var(--green)">
+                <p class="plan-title" style="color:var(--green)">7 DAY PASS</p><div class="plan-price">RP 100.000</div>
+                <a href="https://wa.me/6283845203074" class="btn-buy" style="background:var(--green)">BELI SEKARANG</a>
+            </div>
+            <div class="premium-card">
+                <p class="plan-title">30 DAY PASS</p><div class="plan-price">RP 150.000</div>
+                <a href="https://wa.me/6283845203074" class="btn-buy">BELI SEKARANG</a>
+            </div>
+        </div>
+
+        <div id="tutorial" class="page">
+            <div class="panel">
+                <h2 style="color:var(--cyan); margin-bottom:20px;">⚙️ SETUP GUIDE</h2>
+                <div class="setup-step"><b>1. Registrasi ID</b><br>Daftarkan ID Anda di dashboard untuk sinkronisasi server.</div>
+                <div class="setup-step"><b>2. In-Game Sensi</b><br>Pastikan sensitivitas Game diatur maksimal (100).</div>
+                <div class="setup-step"><b>3. Keamanan Akun</b><br>Manjii V2 aman karena bekerja pada lapisan touch-layer device.</div>
+                <button onclick="showPage('home')" class="btn-verif">SAYA MENGERTI</button>
+            </div>
+        </div>
+
+        <div id="testi" class="page">
+            <h2 style="color:var(--cyan)">📊 USER FEEDBACK</h2>
+            <div id="testi-list" style="max-height: 550px; overflow-y: auto;"></div>
+            <button onclick="showPage('home')" class="btn-verif" style="margin-top:20px;">DASHBOARD</button>
+        </div>
+
+    </div>
+
+    <script>
+        function openNav() { document.getElementById("mySidebar").style.width = "270px"; }
+        function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
+        
+        function showPage(id) {
+            closeNav();
+            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            if(id === 'testi') loadTesti();
+        }
+
+        const chatBox = document.getElementById('chat-box');
+        const users = ["Raka_FF", "Sultan_iOs", "Bang_Jago", "Vip_User", "Id_281xxx", "Zen_Manjii", "Apple_Boy"];
+        const msgs = ["Easy drag nya nempel kepala!", "ID 281xxx aman akun utama", "Baru langganan 30 hari worth it", "Sensitivitasnya enak parah", "Link tiktok manjii apa bang?"];
+
+        setInterval(() => {
+            if(chatBox.children.length > 4) chatBox.removeChild(chatBox.firstChild);
+            let d = document.createElement('div');
+            d.className = 'chat-line';
+            d.innerHTML = `<span class="chat-user">${users[Math.floor(Math.random()*users.length)]}</span>: ${msgs[Math.floor(Math.random()*msgs.length)]}`;
+            chatBox.appendChild(d);
+        }, 2800);
+
+        function runProcess() {
+            let uid = document.getElementById('uid').value;
+            if(!uid) return alert("Masukkan ID FF!");
+            let log = document.getElementById('log');
+            log.style.display = "block";
+            let lines = ["> Syncing Server...", "> Injecting Easy Drag...", "> ID: " + uid + " Verified", "> 100% AMAN!"];
+            let i = 0; log.innerHTML = "";
+            let t = setInterval(() => {
+                log.innerHTML += lines[i] + "<br>"; i++;
+                if(i==lines.length) { clearInterval(t); alert("Easy Drag Berhasil Aktif!"); }
+            }, 800);
+        }
+
+        function loadTesti() {
+            const list = document.getElementById('testi-list');
+            list.innerHTML = "";
+            const feed = ["Ngeri bang aim nempel terus!", "Aman gak ada banned.", "Mantap manjii v2 terbaik.", "Awalnya ragu ternyata aman.", "Rank Master jadi gampang.", "iOS user wajib coba.", "Akun utama tetep aman.", "Admin ramah pelayanannya.", "Fix ini script paling aman.", "Langganan sebulan gak nyesel.", "Anti surcin beneran terbukti.", "GM pake ini aman.", "Paling licin dari script lain.", "Rekomendasi buat push rank.", "V2 beneran gila fiturnya."];
+            feed.forEach(t => {
+                list.innerHTML += `<div style="background:var(--card); padding:15px; border-radius:15px; margin-bottom:10px; border-left:4px solid var(--green); text-align:left; font-size:11px;">
+                    <div style="color:var(--cyan); font-weight:bold;">Verified User #${Math.floor(Math.random()*999999)}</div>
+                    "${t}"
+                </div>`;
+            });
+        }
+    </script>
+</body>
+</html>
